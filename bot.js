@@ -485,7 +485,7 @@ class ReportGenerator {
     const report = `
 ╔════════════════════════════════════════════════════════════════════╗
 ║         SECURITY ASSESSMENT REPORT                                 ║
-╚════════════════════════════════════════════════════════════════════╝
+╚══════════════��═════════════════════════════════════════════════════╝
 
 Target: ${scanResults.target}
 Date: ${timestamp}
@@ -529,7 +529,7 @@ ${scanResults.ports?.length > 0 ? scanResults.ports.join(', ') : 'No common port
 ─────────────────────────────────────────────────────────────────────
 ${scanResults.technology?.join('\n') || 'No technology detected'}
 
-────────────────────────────────────────────────────────���────────────
+─────────────────────────────────────────────────────────────────────
 📋 robots.txt STATUS
 ─────────────────────────────────────────────────────────────────────
 ${scanResults.robots ? '✅ Found' : '❌ Not found or blocked'}
@@ -958,9 +958,11 @@ Redirect: ${result.redirectUrl || 'None'}
 // Training command
 bot.onText(/\/training/, async (msg) => {
   const chatId = msg.chat.id;
-  const training = trainingSimulator.createTrainingSession();
+  
+  try {
+    const training = trainingSimulator.createTrainingSession();
 
-  const instructions = `
+    const instructions = `
 *🧪 Security Awareness Training Created*
 
 ✅ Training session created successfully
@@ -995,9 +997,12 @@ Files: index.html
 
 *After Training:*
 Collect anonymous statistics from \`${training.path}/events.json\`
-  `;
+    `;
 
-  await bot.sendMessage(chatId, instructions, { parse_mode: 'Markdown' });
+    await bot.sendMessage(chatId, instructions, { parse_mode: 'Markdown' });
+  } catch (err) {
+    await bot.sendMessage(chatId, `❌ Error: ${err.message}`);
+  }
 });
 
 // Report command
@@ -1035,37 +1040,105 @@ bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   const action = query.data;
 
-  switch (action) {
-    case 'scan':
-      await bot.sendMessage(chatId, 'Send domain to scan:\n/scan example.com');
-      break;
-    case 'headers':
-      await bot.sendMessage(chatId, 'Send domain:\n/headers example.com');
-      break;
-    case 'ssl':
-      await bot.sendMessage(chatId, 'Send domain:\n/ssl example.com');
-      break;
-    case 'dns':
-      await bot.sendMessage(chatId, 'Send domain:\n/dns example.com');
-      break;
-    case 'ports':
-      await bot.sendMessage(chatId, 'Send domain:\n/ports example.com');
-      break;
-    case 'training':
-      bot.emit('text', { text: '/training', chat: { id: chatId }, from: query.from });
-      break;
-    case 'report':
-      await bot.sendMessage(chatId, 'Send domain:\n/report example.com');
-      break;
-    case 'targets':
-      bot.emit('text', { text: '/targets', chat: { id: chatId }, from: query.from });
-      break;
-    case 'help':
-      bot.emit('text', { text: '/help', chat: { id: chatId }, from: query.from });
-      break;
-  }
+  try {
+    switch (action) {
+      case 'scan':
+        await bot.sendMessage(chatId, 'Send domain to scan:\n/scan example.com');
+        break;
+      case 'headers':
+        await bot.sendMessage(chatId, 'Send domain:\n/headers example.com');
+        break;
+      case 'ssl':
+        await bot.sendMessage(chatId, 'Send domain:\n/ssl example.com');
+        break;
+      case 'dns':
+        await bot.sendMessage(chatId, 'Send domain:\n/dns example.com');
+        break;
+      case 'ports':
+        await bot.sendMessage(chatId, 'Send domain:\n/ports example.com');
+        break;
+      case 'training':
+        const training = trainingSimulator.createTrainingSession();
+        const instructions = `
+*🧪 Security Awareness Training Created*
 
-  await bot.answerCallbackQuery(query.id);
+✅ Training session created successfully
+
+*Session Details:*
+Session ID: \`${training.sessionId}\`
+Files: index.html
+
+*Deployment Instructions:*
+
+1. Copy the training files from directory:
+   \`${training.path}\`
+
+2. Deploy to your authorized web server:
+   scp -r ${training.path} user@yourserver:/var/www/training/
+
+3. Access at: https://yourserver/training/index.html
+
+*Important:*
+✅ This page does NOT collect passwords/cookies/camera/microphone
+
+✅ This page ONLY records:
+   • Page opened event
+   • Button clicks
+   • Training completion
+        `;
+        await bot.sendMessage(chatId, instructions, { parse_mode: 'Markdown' });
+        break;
+      case 'report':
+        await bot.sendMessage(chatId, 'Send domain:\n/report example.com');
+        break;
+      case 'targets':
+        const targets = dataManager.getTargets();
+        if (targets.length === 0) {
+          await bot.sendMessage(chatId, '📋 No authorized targets configured');
+        } else {
+          const list = targets.map((t, i) => `${i + 1}. ${t}`).join('\n');
+          await bot.sendMessage(chatId, `*📋 Authorized Targets:*\n\n${list}`, { parse_mode: 'Markdown' });
+        }
+        break;
+      case 'help':
+        await bot.sendMessage(chatId, `
+*🛡️ SECURITY TOOLKIT HELP*
+
+*Authorization:*
+/addtarget <domain> - Add authorized target (admin)
+/removetarget <domain> - Remove target (admin)
+/targets - List authorized targets
+
+*Scanning Commands:*
+/scan <domain> - Full security assessment
+/headers <domain> - Check security headers
+/ssl <domain> - Certificate information
+/dns <domain> - DNS records
+/ports <domain> - Check common ports
+/robots <domain> - Check robots.txt
+/tech <domain> - Detect technology
+/status <domain> - HTTP status check
+
+*Training & Reports:*
+/training - Create training simulation
+/report <domain> - Generate scan report
+
+*Usage Example:*
+/scan example.com
+
+*Important:*
+• Only authorized targets in whitelist
+• All activity is logged
+• Unauthorized testing is prohibited
+        `, { parse_mode: 'Markdown' });
+        break;
+    }
+
+    await bot.answerCallbackQuery(query.id);
+  } catch (err) {
+    console.error('Callback error:', err);
+    await bot.answerCallbackQuery(query.id, { text: `Error: ${err.message}`, show_alert: true });
+  }
 });
 
 // Error handler
