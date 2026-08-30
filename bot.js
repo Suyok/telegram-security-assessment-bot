@@ -485,7 +485,7 @@ class ReportGenerator {
     const report = `
 ╔════════════════════════════════════════════════════════════════════╗
 ║         SECURITY ASSESSMENT REPORT                                 ║
-╚══════════════��═════════════════════════════════════════════════════╝
+╚════════════════════════════════════════════════════════════════════╝
 
 Target: ${scanResults.target}
 Date: ${timestamp}
@@ -955,53 +955,38 @@ Redirect: ${result.redirectUrl || 'None'}
   }
 });
 
-// Training command
+// Training command - Fixed with proper text format
 bot.onText(/\/training/, async (msg) => {
   const chatId = msg.chat.id;
   
   try {
     const training = trainingSimulator.createTrainingSession();
 
-    const instructions = `
-*🧪 Security Awareness Training Created*
+    const instructions = `Training session created successfully!
 
-✅ Training session created successfully
-
-*Session Details:*
-Session ID: \`${training.sessionId}\`
+Session ID: ${training.sessionId}
 Files: index.html
 
-*Deployment Instructions:*
+Deployment Instructions:
 
-1. Copy the training files from directory:
-   \`${training.path}\`
+1. Copy training files from:
+   ${training.path}
 
-2. Deploy to your authorized web server:
+2. Deploy to your web server:
    scp -r ${training.path} user@yourserver:/var/www/training/
 
-3. Access at: https://yourserver/training/index.html
+3. Access at:
+   https://yourserver/training/index.html
 
-*Important:*
-✅ This page does NOT:
-   • Collect passwords
-   • Steal cookies/tokens
-   • Access camera/microphone
-   • Perform fingerprinting
-   • Record credentials
-   • Capture private data
+Important Notes:
+- This page does NOT collect passwords
+- This page does NOT steal cookies
+- This page does NOT access camera/microphone
+- This page ONLY records: page opens, button clicks, training completion`;
 
-✅ This page ONLY records:
-   • Page opened event
-   • Button clicks
-   • Training completion
-
-*After Training:*
-Collect anonymous statistics from \`${training.path}/events.json\`
-    `;
-
-    await bot.sendMessage(chatId, instructions, { parse_mode: 'Markdown' });
+    await bot.sendMessage(chatId, instructions);
   } catch (err) {
-    await bot.sendMessage(chatId, `❌ Error: ${err.message}`);
+    await bot.sendMessage(chatId, `Error: ${err.message}`);
   }
 });
 
@@ -1059,34 +1044,28 @@ bot.on('callback_query', async (query) => {
         break;
       case 'training':
         const training = trainingSimulator.createTrainingSession();
-        const instructions = `
-*🧪 Security Awareness Training Created*
+        const instructions = `Training session created successfully!
 
-✅ Training session created successfully
-
-*Session Details:*
-Session ID: \`${training.sessionId}\`
+Session ID: ${training.sessionId}
 Files: index.html
 
-*Deployment Instructions:*
+Deployment Instructions:
 
-1. Copy the training files from directory:
-   \`${training.path}\`
+1. Copy training files from:
+   ${training.path}
 
-2. Deploy to your authorized web server:
+2. Deploy to your web server:
    scp -r ${training.path} user@yourserver:/var/www/training/
 
-3. Access at: https://yourserver/training/index.html
+3. Access at:
+   https://yourserver/training/index.html
 
-*Important:*
-✅ This page does NOT collect passwords/cookies/camera/microphone
-
-✅ This page ONLY records:
-   • Page opened event
-   • Button clicks
-   • Training completion
-        `;
-        await bot.sendMessage(chatId, instructions, { parse_mode: 'Markdown' });
+Important Notes:
+- This page does NOT collect passwords
+- This page does NOT steal cookies
+- This page does NOT access camera/microphone
+- This page ONLY records: page opens, button clicks, training completion`;
+        await bot.sendMessage(chatId, instructions);
         break;
       case 'report':
         await bot.sendMessage(chatId, 'Send domain:\n/report example.com');
@@ -1097,19 +1076,18 @@ Files: index.html
           await bot.sendMessage(chatId, '📋 No authorized targets configured');
         } else {
           const list = targets.map((t, i) => `${i + 1}. ${t}`).join('\n');
-          await bot.sendMessage(chatId, `*📋 Authorized Targets:*\n\n${list}`, { parse_mode: 'Markdown' });
+          await bot.sendMessage(chatId, `Authorized Targets:\n\n${list}`);
         }
         break;
       case 'help':
-        await bot.sendMessage(chatId, `
-*🛡️ SECURITY TOOLKIT HELP*
+        await bot.sendMessage(chatId, `SECURITY TOOLKIT HELP
 
-*Authorization:*
+Authorization:
 /addtarget <domain> - Add authorized target (admin)
 /removetarget <domain> - Remove target (admin)
 /targets - List authorized targets
 
-*Scanning Commands:*
+Scanning Commands:
 /scan <domain> - Full security assessment
 /headers <domain> - Check security headers
 /ssl <domain> - Certificate information
@@ -1119,18 +1097,17 @@ Files: index.html
 /tech <domain> - Detect technology
 /status <domain> - HTTP status check
 
-*Training & Reports:*
+Training & Reports:
 /training - Create training simulation
 /report <domain> - Generate scan report
 
-*Usage Example:*
+Usage Example:
 /scan example.com
 
-*Important:*
-• Only authorized targets in whitelist
-• All activity is logged
-• Unauthorized testing is prohibited
-        `, { parse_mode: 'Markdown' });
+Important:
+- Only authorized targets in whitelist
+- All activity is logged
+- Unauthorized testing is prohibited`);
         break;
     }
 
