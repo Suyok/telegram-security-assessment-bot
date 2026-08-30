@@ -1,0 +1,50 @@
+# .gitignore - Telegram Security Assessment Bot
+
+# Environment variables (NEVER commit secrets!)
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs and databases
+logs/
+*.log
+*.db
+*.sqlite
+
+# Data files
+data/
+training_sessions/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
+.env.backup
+
+# Build
+dist/
+build/
+
+# Keep structure but ignore content
+!logs/.gitkeep
+!data/.gitkeep
+!training_sessions/.gitkeep
