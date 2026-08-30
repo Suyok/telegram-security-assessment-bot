@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Suyok
+Copyright (c) 2026 Security Assessment Bot Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,19 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+IMPORTANT LEGAL NOTICE:
+
+This software is provided for authorized security testing and employee training
+only. Unauthorized access to computer systems is illegal in most jurisdictions.
+
+Users are solely responsible for:
+- Obtaining written authorization before testing any target
+- Complying with all applicable laws and regulations
+- Using this tool only for legitimate purposes
+- Following responsible disclosure practices
+- Maintaining confidentiality of assessment results
+
+The authors assume no liability for misuse or illegal application of this software.

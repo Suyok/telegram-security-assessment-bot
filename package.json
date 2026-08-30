@@ -1,0 +1,34 @@
+{
+  "name": "telegram-security-assessment-bot",
+  "version": "1.0.0",
+  "description": "Security assessment bot for authorized cybersecurity teams - runs on Node.js without VPS",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "NODE_ENV=development node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "security",
+    "assessment",
+    "cybersecurity",
+    "security-testing",
+    "termux",
+    "penetration-testing"
+  ],
+  "author": "Security Team",
+  "license": "MIT",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.63.0",
+    "dotenv": "^16.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Suyok/telegram-security-assessment-bot.git"
+  }
+}
